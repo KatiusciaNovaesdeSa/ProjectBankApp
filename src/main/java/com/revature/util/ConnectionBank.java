@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 //import org.apache.log4j.Logger;
 
-public class ConnectionFactoryPostgres {
+public class ConnectionBank {
 
 	//Logger log = Logger.getRootLogger();
 	
@@ -16,9 +16,9 @@ public class ConnectionFactoryPostgres {
 	
 	public static String PASSWORD;
 	
-	private static ConnectionFactoryPostgres connectionFactory = null;
+	private static ConnectionBank connectionFactory = null;
 	
-	private ConnectionFactoryPostgres() {
+	private ConnectionBank() {
 		
 		
 		 URL =  "jdbc:postgresql://rev-canada-training.cgz20kzsu2zt.us-east-2.rds.amazonaws.com:5432/bankapp";
@@ -30,17 +30,13 @@ public class ConnectionFactoryPostgres {
 	
 	public Connection createConnection() {
 		
-		// issue with this version of the postgres driver where it doesn't actually load the driver
-		// you have to specifically tell it to load this driver into memory
 		try {
 			Class.forName("org.postgresql.Driver");
 		}
 		catch (ClassNotFoundException e) {
-			System.out.println("Failed to load Driver");
 			e.printStackTrace();
 		}
 		
-	//	log.info("URL : " + URL);
 		
 		try {
 			return DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -56,10 +52,8 @@ public class ConnectionFactoryPostgres {
 	
 	public static synchronized Connection getConnection() {
 		
-		// synchronized keeps program thread safe by making multiple calls wait
-		
 		if (connectionFactory == null) {
-			connectionFactory = new ConnectionFactoryPostgres();
+			connectionFactory = new ConnectionBank();
 		}
 		
 		return connectionFactory.createConnection();

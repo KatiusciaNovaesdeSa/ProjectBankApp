@@ -47,7 +47,7 @@ public class BankMenu implements MenuInterface {
 			else if (selection.equals("b") || selection.equals("B")) {
 				nextMenu = signupMenu;
 			}
-			else if (selection.equals("d") || selection.equals("D")) {
+			else if (selection.equals("c") || selection.equals("C")) {
 				System.out.println("Exiting! Good Bye!!");
 				System.out.println();
 				nextMenu = null;

@@ -1,5 +1,7 @@
 package com.revature.model;
 
+import com.revature.util.AccountType;
+
 public class Account {
 
 	private String username;
@@ -7,17 +9,18 @@ public class Account {
 	
 	private String fullName;
 	private String firstname;
-	private String middlename;
+	//private String middlename;
 	private String lastname;
 	
-	private String email;
-	private String phoneNumber;
+//	private String email;
+//	private String phoneNumber;
 	
 	private String fullAddress;
 	private String street;
 	private String city;
-	private String state;
-	private String zipcode;
+//	private String state;
+//	private String zipcode;
+	AccountType accountType;
 
 	private int checkingAccountBalance;
 	private int savingsAccountBalance;
@@ -26,33 +29,46 @@ public class Account {
 		super();
 	}
 	
-	public Account(String username, String password, String firstname, String middlename,
-			String lastname, String street, String city,
-			String state, String zipcode, String email, String phoneNumber) {
+//	public Account(String username, String password, String firstname, String middlename,
+//			String lastname, String street, String city,
+//			String state, String zipcode, String email, String phoneNumber) {
+	
+	
+	public Account(String username, String password, String firstname, 
+			String lastname, String street, String city, String acctType) {
 		super();
 		this.username = username;
 		this.password = password;
 		
 		this.firstname = firstname;
-		this.middlename = middlename;
+	//	this.middlename = middlename;
 		this.lastname = lastname;
 		
-		setFullName(firstname, middlename, lastname);
+	//	setFullName(firstname, middlename, lastname);
+		setFullName(firstname, lastname);
 		
 		this.street = street;
 		this.city = city;
-		this.state = state;
-		this.zipcode = zipcode;
+	//	this.state = state;
+	//	this.zipcode = zipcode;
 		
-		setFullAddress(street, city, state, zipcode);
+		//setFullAddress(street, city, state, zipcode);
+
+		setFullAddress(street, city);
 		
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		
+//		this.email = email;
+//		this.phoneNumber = phoneNumber;
+//		
 		// checking and savings accounts balances are initialized to 0
 		// user has to deposit money after creating account
-		this.checkingAccountBalance = 0;
-		this.savingsAccountBalance = 0;
+		if(acctType.contentEquals("c")) {
+			this.accountType = AccountType.CHECKING;
+		}
+		else if(acctType.contentEquals("s")) {
+			this.accountType = AccountType.SAVINGS;
+		}
+		//this.checkingAccountBalance = 0;
+		//this.savingsAccountBalance = 0;
 	}
 
 	public String getUsername() {
@@ -75,28 +91,15 @@ public class Account {
 		return fullName;
 	}
 
-	public void setFullName(String firstname, String middlename, String lastname) {
-		/**
-		 * Sets the full name of an account user with the given first name, middle name, and last name.
-		 * Saves the full name in the private String fullName.
-		 * After doing this, it sets the separate private Strings firstname, middlename, and lastname
-		 * with the given first name, middle name, and last name.
-		 * 
-		 * @param firstname		the account user's first name
-		 * @param middlename	the account user's middle name
-		 * @param lastname		the account user's last name
-		 * 
-		 */
 		
-		if (middlename.equals("")) { // user doesn't have a middle name
-			this.fullName = firstname + " " + lastname;
-		}
-		else { // user has a middle name
-			this.fullName = firstname + " " + middlename + " " + lastname;
-		}
+
+	public void setFullName(String firstname, String lastname) {
+
+		
+		System.out.println(this.fullName = firstname + " " + lastname);
+
 		
 		setFirstname(firstname);
-		setMiddlename(middlename);
 		setLastname(lastname);
 	}
 
@@ -108,13 +111,6 @@ public class Account {
 		this.firstname = firstname;
 	}
 
-	public String getMiddlename() {
-		return middlename;
-	}
-
-	public void setMiddlename(String middlename) {
-		this.middlename = middlename;
-	}
 
 	public String getLastname() {
 		return lastname;
@@ -124,44 +120,20 @@ public class Account {
 		this.lastname = lastname;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
 
 	public String getFullAddress() {
 		return fullAddress;
 	}
-
-	public void setFullAddress(String street, String city, String state, String zipcode) {
-		/**
-		 * Sets the account user's full address.
-		 * Saves the full address in the private String fullAddress, and then saves each
-		 * piece of the address in their respective private String variables.
-		 * 
-		 * @param street	the given street
-		 * @param city		the given city
-		 * @param state		the given state
-		 * @param zipcode	the given zip code
-		 */
+	
 		
-		this.fullAddress = street + " " + city + " " + state + " " + zipcode;
+		public void setFullAddress(String street, String city) {
+			
+			
+			this.fullAddress = street + " " + city ;
+			
 		
 		setStreet(street);
 		setCity(city);
-		setState(state);
-		setZipcode(zipcode);
 		
 	}
 
@@ -181,21 +153,6 @@ public class Account {
 		this.city = city;
 	}
 
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getZipcode() {
-		return zipcode;
-	}
-
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
-	}
 
 	public int getCheckingAccountBalance() {
 		return checkingAccountBalance;
@@ -213,4 +170,13 @@ public class Account {
 		this.savingsAccountBalance = savingsAccountBalance;
 	}
 
+	public AccountType getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(AccountType accountType) {
+		this.accountType = accountType;
+	}
+
+	
 }

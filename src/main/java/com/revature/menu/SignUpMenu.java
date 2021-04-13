@@ -78,11 +78,6 @@ public class SignUpMenu implements MenuInterface {
 			System.out.println();
 		}
 		
-		// middle name can be an empty string because not everyone has a middle name
-		String middlename = "";
-		System.out.print("Middle name (hit enter key if no middle name): ");
-		middlename = scanner.nextLine();
-		System.out.println();
 		
 		String lastname = "";
 		while (lastname.equals("")) {
@@ -105,36 +100,16 @@ public class SignUpMenu implements MenuInterface {
 			System.out.println();
 		}
 		
-		String state = "";
-		while (state.equals("")) {
-			System.out.print("State: ");
-			state = scanner.nextLine();
+		
+		String accountType = "";
+		while (accountType.equals("") && notValid(accountType)) {
+			System.out.print("Account type(s for SAVINGS, c for CHECKING): ");
+			accountType = scanner.nextLine();
 			System.out.println();
 		}
 		
-		String zipcode = "";
-		while (zipcode.equals("")) {
-			System.out.print("Zip code: ");
-			zipcode = scanner.nextLine();
-			System.out.println();
-		}
-		
-		String email = "";
-		while (email.equals("")) {
-			System.out.print("Email: ");
-			email = scanner.nextLine();
-			System.out.println();
-		}
-		
-		String phoneNumber = "";
-		while (phoneNumber.equals("")) {
-			System.out.print("Phone number: ");
-			phoneNumber = scanner.nextLine();
-			System.out.println();
-		}
-		
-		Account newAccount = new Account(username, password, firstname, middlename, lastname,
-				street, city, state, zipcode, email, phoneNumber);
+		Account newAccount = new Account(username, password, firstname, lastname,
+				street, city, accountType);
 		
 		accountDao.createAccount(newAccount);
 		
@@ -147,6 +122,13 @@ public class SignUpMenu implements MenuInterface {
 		} catch (AccountNotFound | InvalidPassword e) {
 			e.printStackTrace();
 		}
+	}
+
+	private boolean notValid(String accountType) {
+		if(accountType.contentEquals("s") || accountType.contentEquals("c")) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

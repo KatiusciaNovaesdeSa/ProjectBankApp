@@ -48,13 +48,12 @@ public class MainMenu implements MenuInterface {
 			
 			System.out.println("*..................................*");
 			System.out.println("*	          MENU             *");
-			System.out.println("* a. Account Info                  *");
-			System.out.println("* b. Check balance                 *");
-			System.out.println("* c. Manage account                *");
-			System.out.println("* d. Deposit                       *");
-			System.out.println("* e. Transfer Money                *");
-			System.out.println("* f. Withdraw                      *");
-		//	System.out.println("* g. Help                          *");
+			System.out.println("* a. Info                          *");
+			System.out.println("* b. Balance                       *");		
+			System.out.println("* c. Deposit                       *");
+			System.out.println("* d. Transfer                      *");
+			System.out.println("* e. Withdraw                      *");
+			System.out.println("* f. Update                        *");
 			System.out.println("* h. Exit                          *");
 			System.out.println("*..................................*");
 
@@ -68,20 +67,21 @@ public class MainMenu implements MenuInterface {
 			else if (selection.equals("b") || selection.equals("B")) {
 				accountDao.viewAccountBalances(account);
 			}
-			else if (selection.equals("d") || selection.equals("D")) {
+			else if (selection.equals("c") || selection.equals("C")) {
 				System.out.println("*............DEPOSIT MONEY.......... *");
 				System.out.println("*....................................*");
 				System.out.println("* 1. Checking                        *");
 				System.out.println("* 2. Saving                          *");
+				System.out.println("* 3. Exit                            *");
 				System.out.println("*....................................*");
 				System.out.println();
-				accountDao.viewAccountBalances(account);
+			//	accountDao.viewAccountBalances(account);
 				System.out.print("You selected: ");
 				selection = scanner.nextLine();
 				System.out.println();
 				
 				if (selection.equals("1") || selection.equals("1")) {
-					System.out.println("You selected checking.");
+					System.out.println("Checking.");
 					System.out.print("How much would you like to deposit?: ");
 					selection = scanner.nextLine();
 					System.out.println();
@@ -90,7 +90,7 @@ public class MainMenu implements MenuInterface {
 					
 				}
 				else if (selection.equals("2") || selection.equals("2")) {
-					System.out.println("You selected savings.");
+					System.out.println("Savings.");
 					System.out.print("How much would you like to deposit?: ");
 					selection = scanner.nextLine();
 					System.out.println();
@@ -98,21 +98,23 @@ public class MainMenu implements MenuInterface {
 					accountDao.depositIntoSavings(account, selection);
 					
 				}
+				else if(selection.equals("3")) {
+					 displayOptions();
+				}
 				else {
-					System.out.println("Invalid input; please try again.");
+					System.out.println("Invalid input. Please try again.");
 					System.out.println();
 				}
 			}
-//			else if(selection.equals("g") || selection.equals("G")) {
-//				help();
-//			}
-			else if (selection.equals("c") || selection.equals("C")) {
+
+			else if (selection.equals("f") || selection.equals("F")) {
 
 				
 				System.out.println("*...........MANAGE ACCOUNT.......... *");
 				System.out.println("*....................................*");
 				System.out.println("* 1. Update                          *");
 				System.out.println("* 2. Delete                          *");
+				System.out.println("* 3. Exit                            *");
 				System.out.println("*....................................*");
 				
 				System.out.print("Your selection: ");
@@ -124,19 +126,18 @@ public class MainMenu implements MenuInterface {
 					
 					System.out.println("*...........UPDATE ACCOUNT.......... *");
 					System.out.println("*....................................*");
-					System.out.println("* a. Address                         *");
-					System.out.println("* b. Email                           *");
-					System.out.println("* c. Phone Number                    *");
-					System.out.println("* d. Name                            *");
-					System.out.println("* e. Username                        *");
-					System.out.println("* f. Password                        *");
+    				System.out.println("* a. Address                         *");
+					System.out.println("* b. Name                            *");
+					System.out.println("* c. Username                        *");
+					System.out.println("* d. Password                        *");
+					System.out.println("* e. Exit                            *");
 					System.out.println("*....................................*");
 					
 					System.out.print("Your selection: ");
 					selection = scanner.nextLine();
 					
 					if (selection.equals("a") || selection.equals("A")) {
-						System.out.println("You have selected address");
+						System.out.println("New address");
 						System.out.println();
 						
 						String street = "";
@@ -152,49 +153,15 @@ public class MainMenu implements MenuInterface {
 							city = scanner.nextLine();
 							System.out.println();
 						}
-						
-						String state = "";
-						while (state.equals("")) {
-							System.out.print("State: ");
-							state = scanner.nextLine();
-							System.out.println();
-						}
-						
-						String zipcode = "";
-						while (zipcode.equals("")) {
-							System.out.print("Zip code: ");
-							zipcode = scanner.nextLine();
-							System.out.println();
-						}
-						
-						account.setFullAddress(street, city, state, zipcode);
+				account.setFullAddress(street, city);
+
+				System.out.println("Account has been updated.");
 						
 					}
-					else if (selection.equals("b") || selection.equals("B")) {
-						String email = "";
-						while (email.equals("")) {
-							System.out.print("Email: ");
-							email = scanner.nextLine();
-							System.out.println();
-						}
-						
-						account.setEmail(email);
-					}
-					
-					else if (selection.equals("c") || selection.equals("C")) {
-						String phoneNumber = "";
-						while (phoneNumber.equals("")) {
-							System.out.print("Phone number: ");
-							phoneNumber = scanner.nextLine();
-							System.out.println();
-						}
-						account.setPhoneNumber(phoneNumber);
-						
-					}
-					
+				
 		
-					else if (selection.equals("d") || selection.equals("D")) {
-						System.out.println("You have selected name");
+					else if (selection.equals("b") || selection.equals("B")) {
+						System.out.println("Change your name");
 						System.out.println();
 						
 						String firstname = "";
@@ -203,13 +170,7 @@ public class MainMenu implements MenuInterface {
 							firstname = scanner.nextLine();
 							System.out.println();
 						}
-						
-						// middle name can be an empty string because not everyone has a middle name
-						String middlename = "";
-						System.out.print("Middle name (hit enter key if no middle name): ");
-						middlename = scanner.nextLine();
-						System.out.println();
-						
+											
 						String lastname = "";
 						while (lastname.equals("")) {
 							System.out.print("Last name: ");
@@ -217,10 +178,12 @@ public class MainMenu implements MenuInterface {
 							System.out.println();
 						}
 						
-						account.setFullName(firstname, middlename, lastname);
+						account.setFullName(firstname, lastname);
+
+						System.out.println("Account has been updated.");
 					}
-					else if (selection.equals("f") || selection.equals("F")) {
-						System.out.println("You have selected password");
+					else if (selection.equals("d") || selection.equals("D")) {
+						System.out.println("Change your password");
 						System.out.println();
 						
 						String password = "";
@@ -231,9 +194,14 @@ public class MainMenu implements MenuInterface {
 						}
 						
 						account.setPassword(password);
+
+						System.out.println("Account has been updated.");
 					}
-					else if (selection.equals("e") || selection.equals("E")) {
-						System.out.println("You have selected username");
+					else if(selection.equals("e") || selection.equals("E")) {
+						quit = quit(selection, scanner);
+					}
+					else if (selection.equals("c") || selection.equals("C")) {
+						System.out.println("Change your username");
 						System.out.println();
 						
 						String newUsername = "";
@@ -255,16 +223,17 @@ public class MainMenu implements MenuInterface {
 						accountDao.updateAccountUsername(account, account.getUsername(), newUsername);
 						
 						account.setUsername(newUsername);
+
+						System.out.println("Account has been updated.");
 						
 					}
 					else {
-						System.out.println("Invalid selection; please try again");
+						System.out.println("Invalid selection. Please try again");
 						System.out.println();
 					}
 					
 					accountDao.updateAccount(account);
 					
-					System.out.println("Account information has been successfully updated.");
 					System.out.println();
 				}
 				else if (selection.equals("2")) {
@@ -274,19 +243,17 @@ public class MainMenu implements MenuInterface {
 					
 					
 					if (checkingBalance > 0 || savingsBalance > 0) {
-						System.out.println("Can't delete an account with money in either checking or savings.");
-						System.out.println("Please withdraw all of your money before deleting your account.");
+						System.out.println("You can't delete your account. Please withdraw your money first");
 						System.out.println();
 						accountDao.viewAccountBalances(account);
 					}
 					else {
-						System.out.println("Are you sure you want to delete your account? Type 'DELETE' to confirm.");
-						System.out.println("Hit the enter key to cancel account deletion.");
-						System.out.print("Your selection: ");
+						System.out.println("Are you sure you want to remove your account? Plaese enter y to delete your account or n to exit.");
+
 						selection = scanner.nextLine();
 						System.out.println();
 						
-						if (selection.equals("DELETE")) {
+						if (selection.equals("y")) {
 							accountDao.deleteAccount(account);
 							
 							System.out.println("Account has been deleted.");
@@ -295,56 +262,66 @@ public class MainMenu implements MenuInterface {
 							quit = true;
 						}
 						else {
-							System.out.println("Account deletion cancelled");
+							System.out.println("Quit");
 							System.out.println();
 						}
 					}
 					
+				}else if(selection.equals("3")) {
+					 displayOptions();
 				}
 				else {
-					System.out.println("Invalid input; please try again.");
+					System.out.println("Invalid input. Please try again.");
 					System.out.println();
 				}
 			}
-			else if(selection.equals("e") || selection.equals("E")) {
-				System.out.println("You would like to make a transfer.");
-				System.out.println();
-				System.out.println("Which account would you like to transfer money from? ('c' for checking to savings  / 's' for savings to checking");
-				System.out.println();
+			else if(selection.equals("d") || selection.equals("D")) {
+				System.out.println("*............TRANSFER MONEY..........*");
+				System.out.println("*....................................*");
+				System.out.println("* 1. Checking to Savings             *");
+				System.out.println("* 2. Saving to Checking              *");
+				System.out.println("* 3. Exit                            *");
+				System.out.println("*....................................*");
 				accountDao.viewAccountBalances(account);
 				System.out.print("Your selection: ");
 				selection = scanner.nextLine();
 				System.out.println();
 				
-				if (selection.equals("c") || selection.equals("C")) {
-					System.out.print("How much would you like to transfer from checking into savings?: ");
+				if (selection.equals("1")) {
+					System.out.print("How much would you like to transfer from checking?: ");
 					selection = scanner.nextLine();
 					System.out.println();
 					accountDao.transferFromCheckingToSavings(account, selection);
 				}
-				else if (selection.equals("s") || selection.equals("S") ){
-					System.out.print("How much would you like to transfer from savings into checking?: ");
+				else if (selection.equals("2")){
+					System.out.print("How much would you like to transfer from savings?: ");
 					selection = scanner.nextLine();
 					System.out.println();
 					accountDao.transferFromSavingsToChecking(account, selection);
+				}else if(selection.equals("3")) {
+					 displayOptions();
 				}
 				else {
-					System.out.println("Invalid input; please try again.");
+					System.out.println("Invalid input. Please try again.");
 					System.out.println();
 				}
 			}
 			else if(selection.equals("h") || selection.equals("H")) {
 				quit = quit(selection, scanner);
 			}
-			else if (selection.equals("f") || selection.equals("F")) {
-				System.out.println("Which account would you like to withdraw money from? ('c' for checking  / 's' for savings");
-				System.out.println();
+			else if (selection.equals("e") || selection.equals("E")) {
+				System.out.println("*..........ACCOUNT WITHDRAW..........*");
+				System.out.println("*....................................*");
+				System.out.println("* 1. Checking                        *");
+				System.out.println("* 2. Saving                          *");
+				System.out.println("* 3. Exit                            *");
+				System.out.println("*....................................*");
 				accountDao.viewAccountBalances(account);
 				System.out.print("Your selection: ");
 				selection = scanner.nextLine();
 				System.out.println();
 				
-				if (selection.equals("c") || selection.equals("C")) {
+				if (selection.equals("1")) {
 					System.out.println("You selected checking.");
 					System.out.print("How much would you like to withdraw?: ");
 					selection = scanner.nextLine();
@@ -352,13 +329,15 @@ public class MainMenu implements MenuInterface {
 					
 					accountDao.withdrawFromChecking(account, selection);	
 				}
-				else if (selection.equals("s") || selection.equals("S")) {
+				else if (selection.equals("2")) {
 					System.out.println("You selected savings.");
 					System.out.print("How much would you like to withdraw?: ");
 					selection = scanner.nextLine();
 					System.out.println();
 					
 					accountDao.withdrawFromSavings(account, selection);
+				}else if(selection.equals("3")) {
+					 displayOptions();
 				}
 				else {
 					System.out.println("Invalid input; please try again.");
@@ -397,30 +376,7 @@ public class MainMenu implements MenuInterface {
 		this.accountDao = accountDao;
 	}
 	
-//	public static void help() {
-//		System.out.println("Help Menu");
-//		System.out.println("In order to select options, type the correct character for the selection you want to use.");
-//		System.out.println();
-//
-//		System.out.println("To view your user account information, type 'a' or 'A'");
-//		System.out.println("To view your balances, type 'b' or 'B'");
-//		System.out.println("To make a deposit, type 'd' or 'D'");
-//		System.out.println("To access the help menu, type 'h' or 'H'");
-//		System.out.println("To manage your account, such as updating your personal information or deleting your account, type 'm' or 'M'");
-//		System.out.println("To transfer money from one account to another, type 't' or 'T'");
-//		System.out.println("To quit the system, type 'q' or 'Q'");
-//		System.out.println("To make a withdrawal, type 'w' or 'W'");
-//		System.out.println();
-//
-//		System.out.println("Some menu options will require typing 'y' or 'Y' for yes, or 'n' or 'N' for 'no'");
-//		System.out.println();
-//
-//		System.out.println("For deposits, withdrawals, and transfers, you will have to type the amount of money in USD.");
-//		System.out.println("Example: type '100', '$100' if you want to deposit $100");
-//		System.out.println();
-//		
-//	}
-	
+
 	public boolean quit(String selection, Scanner scanner) {
 		System.out.println("Are you sure you want to quit? (y / n)");
 		System.out.print("Your selection: ");
@@ -441,6 +397,7 @@ public class MainMenu implements MenuInterface {
 			return false;
 		}
 	}
+	
 
 
 }

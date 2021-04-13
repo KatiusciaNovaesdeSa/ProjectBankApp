@@ -26,9 +26,7 @@ public class LoginMenu implements MenuInterface {
 
 	@Override
 	public void displayOptions() {
-//		System.out.println("Please enter your credentials: ");
-//		System.out.println();
-//		
+		
 		String username = "";
 		while (username.equals("")) {
 			System.out.print("Please enter your username: ");
@@ -49,10 +47,10 @@ public class LoginMenu implements MenuInterface {
 			account = accountDao.getAccountByUsernameAndPassword(username, password);
 		}
 		catch (AccountNotFound e) {
-			System.out.println("No account with that username exists; please try logging in again or create a new account.");
+			System.out.println("No account found. Please try logging in again or create a new account.");
 		}
 		catch (InvalidPassword e) {
-			System.out.println("Invalid password; please try again.");
+			System.out.println("Invalid password. Please try again.");
 		}
 		finally {
 			System.out.println();
