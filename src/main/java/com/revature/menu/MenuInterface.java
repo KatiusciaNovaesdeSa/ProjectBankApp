@@ -7,6 +7,8 @@ public interface MenuInterface {
 
 	public MenuInterface advance();
 	
+	//public void displayAllMenu(); 
+	
 	public void displayOptions();
 	
 	public MenuInterface previousMenu();
@@ -14,6 +16,9 @@ public interface MenuInterface {
 	public Scanner getScanner();
 	
 	public void setScanner(Scanner scan);
+
+	
+
 	
 }
 

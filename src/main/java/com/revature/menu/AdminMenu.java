@@ -1,27 +1,31 @@
 package com.revature.menu;
 
 import com.revature.dao.BankDaoImpl;
+import com.revature.exception.AccountNotFound;
+import com.revature.exception.InvalidPassword;
 import com.revature.model.Account;
 
 import java.util.Scanner;
 
-public class MainMenu implements MenuInterface {
+public class AdminMenu implements MenuInterface {
 
 	private Scanner scanner;
 	
 	private BankDaoImpl accountDao;
 	
 	private Account account;
+
+	private AdminMenu nextMenu;
 	
 	public void setAccount(Account account) {
 		this.account = account;
 	}
 	
-	public MainMenu() {
+	public AdminMenu() {
 		super();
 	}
 	
-	public MainMenu(BankDaoImpl accountDao) {
+	public AdminMenu(BankDaoImpl accountDao) {
 		super();
 		this.accountDao = accountDao;
 	}
@@ -30,9 +34,41 @@ public class MainMenu implements MenuInterface {
 	public MenuInterface advance() {
 		return null;
 	}
+	
+	
 
 	@Override
 	public void displayOptions() {
+		String username = "";
+		while (username.equals("")) {
+			System.out.print("Please enter your username: ");
+			username = scanner.nextLine();
+			System.out.println();
+		}
+		
+		String password = "";
+		while (password.equals("")) {
+			System.out.print("Please enter your password: ");
+			password = scanner.nextLine();
+			System.out.println();
+		}
+		
+		Account account = null;
+		
+		try {
+			account = accountDao.getAccountByUsernameAndPassword(username, password);
+		}
+		catch (AccountNotFound e) {
+			System.out.println("No account found. Please try logging in again.");
+		}
+		catch (InvalidPassword e) {
+			System.out.println("Invalid password. Please try again.");
+		}
+		finally {
+			System.out.println();
+		}
+		
+		
 		System.out.println("Welcome " + account.getFullName() + "!");
 		System.out.println();
 		
@@ -182,21 +218,7 @@ public class MainMenu implements MenuInterface {
 
 						System.out.println("Account has been updated.");
 					}
-					else if (selection.equals("d") || selection.equals("D")) {
-						System.out.println("Change your password");
-						System.out.println();
-						
-						String password = "";
-						while (password.equals("")) {
-							System.out.print("New password: ");
-							password = scanner.nextLine();
-							System.out.println();
-						}
-						
-						account.setPassword(password);
-
-						System.out.println("Account has been updated.");
-					}
+					
 					else if(selection.equals("e") || selection.equals("E")) {
 						quit = quit(selection, scanner);
 					}
@@ -396,6 +418,12 @@ public class MainMenu implements MenuInterface {
 			System.out.println();
 			return false;
 		}
+	}
+
+	public void setNextMenu(AdminMenu adminMenu) {
+		// TODO Auto-generated method stub
+		this.nextMenu = adminMenu;
+		
 	}
 
 

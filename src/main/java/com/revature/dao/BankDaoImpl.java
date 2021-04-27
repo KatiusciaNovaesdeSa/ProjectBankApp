@@ -6,13 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.log4j.Logger;
 
-//import org.apache.log4j.Logger;
 
 import com.revature.dao.AccountInterface;
 import com.revature.exception.AccountNotFound;
 import com.revature.exception.InvalidPassword;
 import com.revature.model.Account;
+import com.revature.model.AccountTypeBalance;
 import com.revature.service.AccountService;
 import com.revature.util.AccountType;
 import com.revature.util.ConnectionBank;
@@ -21,7 +22,7 @@ import com.revature.dao.BankDbConnection;
 
 public class BankDaoImpl implements AccountInterface {
 	
-//private Logger log = Logger.getRootLogger();
+  private Logger log = Logger.getRootLogger();
 	
 	Connection connection = ConnectionBank.getConnection();
 
@@ -37,13 +38,9 @@ public class BankDaoImpl implements AccountInterface {
 	public boolean getAccountByUsername(String username) {
 
 		
-	//	log.info("Checking to see if the username is taken");
-		
 		Connection connection = ConnectionBank.getConnection();
 		
 		try {
-			
-	//		log.info("Successfully connected to the database");
 			
 			String sql = "select * from accounts where user_name = '" + username + "';";
 			
@@ -54,11 +51,11 @@ public class BankDaoImpl implements AccountInterface {
 			connection.close();
 			
 			if (rs.next()) {
-	//			log.warn("Username already taken");
+				log.warn("Username already exists");
 				return true;
 			}
 			else {
-	//			log.info("Username is available");
+				log.info("Username available");
 				return false;
 			}
 		
@@ -70,6 +67,12 @@ public class BankDaoImpl implements AccountInterface {
 		return false;
 		
 	}
+	
+	
+	
+
+	
+	
 
 	@Override
 	public Account getAccountByUsernameAndPassword(String username, String password) throws AccountNotFound, InvalidPassword {
@@ -81,8 +84,6 @@ public class BankDaoImpl implements AccountInterface {
 		
 		try {
 			
-	//		log.info("Successfully connected to the database");
-			
 			String sql = "select * from accounts where user_name = '" + username + "';";
 			
 			Statement statement = connection.createStatement();
@@ -91,13 +92,13 @@ public class BankDaoImpl implements AccountInterface {
 			
 			while (rs.next()) {
 				
-	//			log.info("Account with matching username found in the database");
+				log.info("Username found");
 				
 				if (rs.getString("pass_word").equals(password)) {
-	//				log.info("The given password matches the account's password");
+					log.info("Password matches");
 				}
 				else {
-	//				log.warn("Invalid password; the given password does not match this account's password");
+	     			log.warn("Invalid password");
 					throw new InvalidPassword();
 				}
 				
@@ -107,38 +108,33 @@ public class BankDaoImpl implements AccountInterface {
 				account.setPassword(rs.getString("pass_word"));
 				
 				account.setFirstname(rs.getString("first_name"));
-			//	account.setMiddlename(rs.getString("middle_name"));  //AQUI
 				account.setLastname(rs.getString("last_name"));
-				
-			//	account.setFullName(account.getFirstname(), account.getMiddlename(), account.getLastname());
 
 			    account.setFullName(account.getFirstname(), account.getLastname());
 				
 				account.setStreet(rs.getString("street"));
 				account.setCity(rs.getString("city"));
-			//	account.setState(rs.getString("state"));  //AQUI
-			//	account.setZipcode(rs.getString("zip_code"));  //AQUI
 				
-			//	account.setFullAddress(account.getStreet(), account.getCity(), account.getState(), account.getZipcode());
 				account.setFullAddress(account.getStreet(), account.getCity());
 				
-//				account.setEmail(rs.getString("email"));
-//				account.setPhoneNumber(rs.getString("phone_number"));
-//				
+				
 				//account.setCheckingAccountBalance(rs.getInt("checking_account_balance"));
 				//account.setSavingsAccountBalance(rs.getInt("savings_account_balance"));
-			
+				
+				// fetch the customer's account type
+				int accountId = rs.getInt("account_id");
+				AccountTypeBalance accType = getAccountTypeBalance(accountId);
+				account.setAccountTypeBalance(accType);
 				connection.close();
 				
 				return account;
 			}
 			
-	//		log.warn("Account not found; no account with the given username exists");
+			log.warn("Account not found");
 			throw new AccountNotFound();
 			
 		}
 		catch (SQLException e) { 
-//			log.error("Unable to connect to the database", e);
 			e.printStackTrace();
 		}
 		
@@ -148,12 +144,6 @@ public class BankDaoImpl implements AccountInterface {
 	@Override
 	public void createAccount(Account account) {
 
-//		
-//		String sql = "insert into accounts "
-//				+ "(user_name, pass_word, first_name, middle_name, last_name, street, city, state, zip_code, "
-//				+ "email, phone_number, checking_account_balance, savings_account_balance) "
-//				+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-		//, checking_account_balance, savings_account_balance
 		
 		String sql = "insert into accounts "
 				+ "(user_name, pass_word, first_name, last_name, street, city) "
@@ -163,22 +153,16 @@ public class BankDaoImpl implements AccountInterface {
 		
 		Connection connection = ConnectionBank.getConnection();
 		
-//		log.info("Attempting to create a new account using a prepared statement");
+		log.info("Creating a new account");
 		
 		try {
-			// preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setString(1, account.getUsername());
 			preparedStatement.setString(2, account.getPassword());
 			preparedStatement.setString(3, account.getFirstname());
-		//	preparedStatement.setString(4, account.getMiddlename());
 			preparedStatement.setString(4, account.getLastname());
 			preparedStatement.setString(5, account.getStreet());
 			preparedStatement.setString(6, account.getCity());
-	//		preparedStatement.setString(8, account.getState());
-		//	preparedStatement.setString(9, account.getZipcode());
-//			preparedStatement.setString(7, account.getEmail());
-//			preparedStatement.setString(8, account.getPhoneNumber());
 //			//preparedStatement.setInt(9, account.getCheckingAccountBalance());
 			//preparedStatement.setInt(10, account.getSavingsAccountBalance());
 			preparedStatement.execute();
@@ -193,10 +177,9 @@ public class BankDaoImpl implements AccountInterface {
 			}
 			
 			connection.close();
-		//	log.info("Successfully created a new account using a prepared statement");
+			log.info("New account created");
 		}
 		catch (SQLException e) {
-		//	log.error("Unable to connect to the database and create a new account using a prepared statement", e);
 			e.printStackTrace();
 		}
 		
@@ -213,7 +196,6 @@ public class BankDaoImpl implements AccountInterface {
 		Connection connection = ConnectionBank.getConnection();
 		
 		try {
-			// preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setInt(1, accountRowId);
 			preparedStatement.setInt(2, (account.getAccountType() == AccountType.CHECKING ? 1 : 2));
@@ -221,7 +203,6 @@ public class BankDaoImpl implements AccountInterface {
 			preparedStatement.execute();
 		}
 		catch (SQLException e) {
-		//	log.error("Unable to connect to the database and create a new account using a prepared statement", e);
 			e.printStackTrace();
 		}
 		
@@ -231,7 +212,7 @@ public class BankDaoImpl implements AccountInterface {
 		
 		String sql = "update accounts set user_name = ? where user_name = ?";
 		
-//		log.info("Attempting to update the account username in the database using a prepared statement");
+		log.info("Updating account username");
 		
 		Connection connection = ConnectionBank.getConnection();
 		
@@ -245,10 +226,9 @@ public class BankDaoImpl implements AccountInterface {
 			
 			connection.close();
 			
-		//	log.info("Account successfully updated in the database using a prepared statement");
+			log.info("Username updated");
 		}
 		catch (SQLException e) {
-		//	log.error("Unable to update the account in the database using a prepared statement", e);
 			e.printStackTrace();
 		}
 		
@@ -269,7 +249,7 @@ public class BankDaoImpl implements AccountInterface {
 			//	+ "savings_account_balance = ? "
 				+ "where user_name = ?";
 		
-	//	log.info("Attempting to update the account in the database using a prepared statement");
+	 log.info("Updating account");
 		
 		Connection connection = ConnectionBank.getConnection();
 		
@@ -280,36 +260,56 @@ public class BankDaoImpl implements AccountInterface {
 			preparedStatement.setString(1, account.getUsername());
 			preparedStatement.setString(2, account.getPassword());
 			preparedStatement.setString(3, account.getFirstname());
-		//	preparedStatement.setString(4, account.getMiddlename());
 			preparedStatement.setString(4, account.getLastname());
 			preparedStatement.setString(5, account.getStreet());
 			preparedStatement.setString(6, account.getCity());
-		//	preparedStatement.setString(8, account.getState());
-		//	preparedStatement.setString(9, account.getZipcode());
-//			preparedStatement.setString(7, account.getEmail());
-//			preparedStatement.setString(8, account.getPhoneNumber());
 		//	preparedStatement.setInt(7, account.getCheckingAccountBalance());
 		//	preparedStatement.setInt(8, account.getSavingsAccountBalance());
 			preparedStatement.setString(7, account.getUsername());
 			preparedStatement.execute();
 			
 			connection.close();
+			updateAccountDetails(account.getAccountTypeBalance());
 			
-	//		log.info("Account successfully updated in the database using a prepared statement");
+			log.info("Account updated");
 		}
 		catch (SQLException e) {
-	//		log.error("Unable to update the account in the database using a prepared statement", e);
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private void updateAccountDetails(AccountTypeBalance atb) {
+		String sql = "update account_tb set "
+				+ "balance = ? "
+				+ "where acc_id = ?";
+		
+		log.info("Updating account balance");
+		
+		Connection connection = ConnectionBank.getConnection();
+		
+		PreparedStatement preparedStatement;
+		
+		try {
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setDouble(1, atb.getAccount_balance());
+			preparedStatement.setInt(2, atb.getAccountId());
+			preparedStatement.executeUpdate();
+			
+			connection.close();
+			
+			log.info("Account balance updated");
+		}
+		catch (SQLException e) {
+			log.error("Error updating balance", e);
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void deleteAccount(Account account) {
 	
-		
-	//	log.trace("deleteAccount method in AccountDaoPostgres class");
-	//	log.info("Attempting to delete account");
+		log.info("Deleting account");
 		
 		Connection connection = ConnectionBank.getConnection();
 		
@@ -323,10 +323,9 @@ public class BankDaoImpl implements AccountInterface {
 			preparedStatement.execute();
 			
 			connection.close();
-		//	log.info("Successfully deleted the account in the database using a prepared statement");
+			log.info("account deleted");
 		}
 		catch (SQLException e) {
-		//	log.error("Unable to connect to database to delete account using a prepared statement");
 			e.printStackTrace();
 		}
 
@@ -335,72 +334,41 @@ public class BankDaoImpl implements AccountInterface {
 	@Override
 	public void viewAccountDetails(Account account) {
 		
-	//	log.info("Getting account details");
+		log.info("Getting account details");
 		
 		System.out.println("Username: " + account.getUsername());
 		System.out.println("Password: " + account.getPassword());
 		System.out.println();
 		System.out.println("Name: " + account.getFullName());
 		System.out.println("Address: " + account.getFullAddress());
-//		System.out.println("Email: " + account.getEmail());
-//		System.out.println("Phone number: " + account.getPhoneNumber());
 		System.out.println();
 		//System.out.println("Checking account balance: " + account.getCheckingAccountBalance());
 		//System.out.println("Savings account balance: " + account.getSavingsAccountBalance());
 		System.out.println();
 
 	}
-
-	
-	//I TRIED TO ADD TO SHOW THE ACCOUNT BALANCE FROM DATABASE 
-//	@Override
-//	public void viewAccountType(Account account) {
-//	Connection connection = ConnectionBank.getConnection();
-//		
-//		try {
-//			
-//	//		log.info("Successfully connected to the database");
-//			
-//			String sql = "select * from ACC_TYPE_TB where user_name = '" + username + "';";
-//			
-//			Statement statement = connection.createStatement();
-//			
-//			ResultSet rs = statement.executeQuery(sql);
-//			
-//			connection.close();
-//			
-//			if (rs.next()) {
-//	//			log.warn("Username already taken");
-//				return true;
-//			}
-//			else {
-//	//			log.info("Username is available");
-//				return false;
-//			}
-//		
-//		}
-//		catch (SQLException e) { 
-//			e.printStackTrace();
-//		}
-//		
-//		return false;
-//		
-//	}
 	
 	
 	@Override
 	public void viewAccountBalances(Account account) {
+		log.info("Getting account balances");
+		System.out.println("Account type: " + account.getAccountTypeBalance().getAccountType());
+		System.out.println("Balance: " + account.getAccountTypeBalance().getAccount_balance());
 		
 
-	 //  System.out.println(" Your account details : " +account.getAccountType());
-	   
-	   
-		
-	//	log.info("Getting account balances");
-		
-		System.out.println("Checking account balance: " + account.getCheckingAccountBalance());
-		System.out.println("Savings account balance: " + account.getSavingsAccountBalance());
-		System.out.println();
+//		int accountType = 0;
+//		if(accountType == 1) {
+//			System.out.println("Checking account balance: " + account.getCheckingAccountBalance());
+//		}
+//		else if((accountType == 2)) {
+//			System.out.println("Savings account balance: " + account.getSavingsAccountBalance());
+//		}else {
+//			System.out.println("error");
+//		}
+//		
+//		System.out.println("Checking account balance: " + account.getCheckingAccountBalance());
+//		System.out.println("Savings account balance: " + account.getSavingsAccountBalance());
+//		System.out.println();
 
 	}
 
@@ -408,14 +376,14 @@ public class BankDaoImpl implements AccountInterface {
 	public void depositIntoChecking(Account account, String amount) {
 	
 		
-	//	log.info("Attempting to deposit into checking");
+		log.info("Deposit into checking");
 		
 		boolean isMoney = false;
 		try {
 			isMoney = AccountService.isPositiveIntGreaterThanZero(amount);
 		}
 		catch (NumberFormatException e) {
-			System.out.println("Invalid input; please enter a valid amount.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 		
@@ -432,7 +400,7 @@ public class BankDaoImpl implements AccountInterface {
 			updateAccount(account);
 		}
 		else {
-			System.out.println("Invalid input; please enter a valid amount.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 
@@ -442,14 +410,14 @@ public class BankDaoImpl implements AccountInterface {
 	public void depositIntoSavings(Account account, String amount) {
 		
 		
-	//	log.info("Attempting to deposit into savings");
+		log.info("Depositing into savings");
 		
 		boolean isMoney = false;
 		try {
 			isMoney = AccountService.isPositiveIntGreaterThanZero(amount);
 		}
 		catch (NumberFormatException e) {
-			System.out.println("Invalid input; please enter a valid amount.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 		
@@ -466,7 +434,7 @@ public class BankDaoImpl implements AccountInterface {
 			updateAccount(account);
 		}
 		else {
-			System.out.println("Invalid input; please enter a valid positive amount.");
+			System.out.println("Invalid input. Please enter a valid positive amount.");
 			System.out.println();
 		}
 		
@@ -475,14 +443,14 @@ public class BankDaoImpl implements AccountInterface {
 	@Override
 	public void withdrawFromChecking(Account account, String amount) {
 		
-	//	log.info("Attempting to withdraw from checking");
+		log.info("Withdrawing from checking");
 		
 		boolean isMoney = false;
 		try {
 			isMoney = AccountService.isPositiveIntGreaterThanZero(amount);
 		}
 		catch (NumberFormatException e) {
-			System.out.println("Invalid input; please enter a valid amount.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 		
@@ -493,7 +461,7 @@ public class BankDaoImpl implements AccountInterface {
 			int currentBalance = account.getCheckingAccountBalance();
 			
 			if (withdraw > currentBalance) {
-				System.out.println("Can't withdraw more money than what is in your account.");
+				System.out.println("You don't have enough funds.");
 				System.out.println("Nothing has been withdrawn.");
 				System.out.println();
 			}
@@ -516,14 +484,14 @@ public class BankDaoImpl implements AccountInterface {
 	public void withdrawFromSavings(Account account, String amount) {
 	
 		
-	//	log.info("Attempting to withdraw from savings");
+		log.info("Withdrawing from savings");
 		
 		boolean isMoney = false;
 		try {
 			isMoney = AccountService.isPositiveIntGreaterThanZero(amount);
 		}
 		catch (NumberFormatException e) {
-			System.out.println("Invalid input; please enter a valid positive USD value.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 		
@@ -534,8 +502,7 @@ public class BankDaoImpl implements AccountInterface {
 			int currentBalance = account.getSavingsAccountBalance();
 			
 			if (withdraw > currentBalance) {
-				System.out.println("Can't withdraw more money than what is in your account.");
-				System.out.println("Nothing has been withdrawn.");
+				System.out.println("You don't have enough funds.");
 				System.out.println();
 			}
 			else {
@@ -558,7 +525,7 @@ public class BankDaoImpl implements AccountInterface {
 	public void transferFromCheckingToSavings(Account account, String amount) {
 	
 		
-	//	log.info("Attempting to transfer money from checking to savings");
+		log.info("Transfering money from checking to savings");
 		
 		boolean isMoney = false;
 		try {
@@ -577,8 +544,7 @@ public class BankDaoImpl implements AccountInterface {
 			int savingsBalance = account.getSavingsAccountBalance();
 			
 			if (transfer > checkingBalance) {
-				System.out.println("Can't transfer more money than what is in your account.");
-				System.out.println("Nothing has been transfered.");
+				System.out.println("You don't have enough funds.");
 				System.out.println();
 			}
 			else {
@@ -592,7 +558,7 @@ public class BankDaoImpl implements AccountInterface {
 			}
 		}
 		else {
-			System.out.println("Invalid input; please enter a valid positive USD value.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 		
@@ -601,14 +567,14 @@ public class BankDaoImpl implements AccountInterface {
 	@Override
 	public void transferFromSavingsToChecking(Account account, String amount) {
 		
-		//log.info("Attempting to transfer money from savings to checking");
+		log.info("Transfering money from savings to checking");
 		
 		boolean isMoney = false;
 		try {
 			isMoney = AccountService.isPositiveIntGreaterThanZero(amount);
 		}
 		catch (NumberFormatException e) {
-			System.out.println("Invalid input; please enter a valid positive USD value.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 		
@@ -620,7 +586,7 @@ public class BankDaoImpl implements AccountInterface {
 			int savingsBalance = account.getSavingsAccountBalance();
 			
 			if (transfer > savingsBalance) {
-				System.out.println("Can't transfer more money than what is in your account.");
+				System.out.println("You don't have enough funds.");
 				System.out.println("Nothing has been transfered.");
 				System.out.println();
 			}
@@ -635,11 +601,150 @@ public class BankDaoImpl implements AccountInterface {
 			}
 		}
 		else {
-			System.out.println("Invalid input; please enter a valid positive amount.");
+			System.out.println("Invalid input. Please enter a valid amount.");
 			System.out.println();
 		}
 		
 	}
+	
+
+//	@Override
+//	public void getAllAccount(Account account)throws AccountNotFound {
+//	
+//
+//		String sql = "select * from accounts ";
+//		
+//	 //log.info("Updating account");
+//		
+//		Connection connection = ConnectionBank.getConnection();
+//		
+//		PreparedStatement preparedStatement;
+//		
+//		try {
+//			preparedStatement = connection.prepareStatement(sql);
+//			preparedStatement.setString(1, account.getUsername());
+//			preparedStatement.setString(2, account.getPassword());
+//			preparedStatement.setString(3, account.getFirstname());
+//			preparedStatement.setString(4, account.getLastname());
+//			preparedStatement.setString(5, account.getStreet());
+//			preparedStatement.setString(6, account.getCity());
+//		//	preparedStatement.setInt(7, account.getCheckingAccountBalance());
+//		//	preparedStatement.setInt(8, account.getSavingsAccountBalance());
+//			preparedStatement.setString(7, account.getUsername());
+//			preparedStatement.execute();
+//			
+//			connection.close();
+//		}
+//		catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+	
+	@Override
+	public Account getAccountByUsernameForEmployee(String username) throws AccountNotFound {
+	
+		
+		Connection connection = ConnectionBank.getConnection();
+		
+		Account account = null;
+		
+		try {
+			
+			log.info("Connecting to the database");
+			
+			String sql = "select * from accounts where user_name = '" + username + "';";
+			
+			Statement statement = connection.createStatement();
+			
+			ResultSet rs = statement.executeQuery(sql);
+			
+			while (rs.next()) {
+				
+				log.info("Username found");
+				account = new Account();
+				int accountId = rs.getInt("account_id");
+				
+				account.setUsername(rs.getString("user_name"));
+				account.setPassword(rs.getString("pass_word"));
+				
+				account.setFirstname(rs.getString("first_name"));
+				account.setLastname(rs.getString("last_name"));
+				
+
+			    account.setFullName(account.getFirstname(), account.getLastname());
+				
+				account.setStreet(rs.getString("street"));
+				account.setCity(rs.getString("city"));
+				account.setFullAddress(account.getStreet(), account.getCity());
+			
+				// fetch the customer's account type
+				AccountTypeBalance accType = getAccountTypeBalance(accountId);
+				account.setAccountTypeBalance(accType);
+			
+				connection.close();
+				
+				return account;
+			}
+			
+			log.warn("Account not found.");
+			throw new AccountNotFound();
+			
+		}
+		catch (SQLException e) { 
+     		log.error("Unable to connect", e);
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public AccountTypeBalance getAccountTypeBalance(int accountId) {
+		
+		Connection connection = ConnectionBank.getConnection();
+		
+		AccountTypeBalance accountTypeBalance = null;
+		
+		try {
+			
+			log.info("Connected to the database");
+			
+			String sql = "select * from account_tb where acc_id = " + accountId + ";";
+			
+			Statement statement = connection.createStatement();
+			
+			ResultSet rs = statement.executeQuery(sql);
+			
+			if (rs.next()) {
+				
+				int acc_Id = rs.getInt("acc_id");
+				int acc_type = rs.getInt("acc_type");
+				double balance = rs.getInt("balance");
+				AccountType accountType = null;
+				
+				if(acc_type == 1) {
+					accountType = AccountType.CHECKING;
+				}
+				else if((acc_type == 2)) {
+					accountType = AccountType.SAVINGS;
+				}
+				accountTypeBalance = new AccountTypeBalance(acc_Id, balance, accountType);
+			}
+		}
+		catch (SQLException e) { 
+    		log.error("Unable to connect", e);
+			e.printStackTrace();
+		}
+		
+		return accountTypeBalance;		
+	}
+
+	@Override
+	public void getAllAccount(Account account) throws AccountNotFound {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
 

@@ -162,4 +162,5 @@ public class SignUpMenu implements MenuInterface {
 		this.nextMenu = nextMenu;
 	}
 
+
 }

@@ -1,5 +1,6 @@
 package com.revature.menu;
 
+
 import java.util.Scanner;
 
 import com.revature.dao.AccountInterface;
@@ -7,9 +8,9 @@ import com.revature.exception.AccountNotFound;
 import com.revature.exception.InvalidPassword;
 import com.revature.model.Account;
 
-public class LoginMenu implements MenuInterface {
+public class AdminLogin implements MenuInterface {
 	
-	private MainMenu mainMenu;
+	private AdminMenu adminMenu;
 	
 	private MenuInterface nextMenu;
 	
@@ -57,8 +58,8 @@ public class LoginMenu implements MenuInterface {
 		}
 		
 		if (account != null) {
-			mainMenu.setAccount(account);
-			nextMenu = mainMenu;
+			adminMenu.setAccount(account);
+			nextMenu = adminMenu;
 		}
 		else {
 			nextMenu = previousMenu;
@@ -81,12 +82,12 @@ public class LoginMenu implements MenuInterface {
 		this.scanner = scanner;
 	}
 
-	public MenuInterface getMainMenu() {
-		return mainMenu;
+	public MenuInterface getAdminMenu() {
+		return adminMenu;
 	}
-
-	public void setMainMenu(MainMenu mainMenu) {
-		this.mainMenu = mainMenu;
+	
+	public void setAdminMenu(AdminMenu adminMenu) {
+		this.adminMenu = adminMenu;
 	}
 
 	public MenuInterface getNextMenu() {
@@ -115,14 +116,14 @@ public class LoginMenu implements MenuInterface {
 		this.accountDao = accountDao;
 	}
 
-	public LoginMenu() {
+	public AdminLogin() {
 		super();
 	}
 
-	public LoginMenu(AccountInterface accountDao, MainMenu mainMenu) {
+	public AdminLogin(AccountInterface accountDao, AdminMenu adminMenu) {
 		super();
 		this.accountDao = accountDao;
-		this.mainMenu = mainMenu;
+		this.adminMenu = adminMenu;
 	}
 
 

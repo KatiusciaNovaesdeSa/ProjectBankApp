@@ -31,10 +31,11 @@ public interface AccountInterface {
 		public void transferFromCheckingToSavings(Account account, String amount);
 		
 		public void transferFromSavingsToChecking(Account account, String amount);
-
 		
-//		//NOT SURE
-//		void viewAccountType(Account account);
-//		
+		public Account getAccountByUsernameForEmployee(String username) throws AccountNotFound;
+
+		public void getAllAccount(Account account) throws AccountNotFound;
+
+			
 }
 

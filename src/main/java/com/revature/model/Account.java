@@ -9,29 +9,20 @@ public class Account {
 	
 	private String fullName;
 	private String firstname;
-	//private String middlename;
 	private String lastname;
 	
-//	private String email;
-//	private String phoneNumber;
 	
 	private String fullAddress;
 	private String street;
 	private String city;
-//	private String state;
-//	private String zipcode;
-	AccountType accountType;
 
 	private int checkingAccountBalance;
 	private int savingsAccountBalance;
+	private AccountTypeBalance accountTypeBalance;
 	
 	public Account() {
 		super();
 	}
-	
-//	public Account(String username, String password, String firstname, String middlename,
-//			String lastname, String street, String city,
-//			String state, String zipcode, String email, String phoneNumber) {
 	
 	
 	public Account(String username, String password, String firstname, 
@@ -41,32 +32,15 @@ public class Account {
 		this.password = password;
 		
 		this.firstname = firstname;
-	//	this.middlename = middlename;
 		this.lastname = lastname;
 		
-	//	setFullName(firstname, middlename, lastname);
 		setFullName(firstname, lastname);
 		
 		this.street = street;
 		this.city = city;
-	//	this.state = state;
-	//	this.zipcode = zipcode;
-		
-		//setFullAddress(street, city, state, zipcode);
-
 		setFullAddress(street, city);
 		
-//		this.email = email;
-//		this.phoneNumber = phoneNumber;
-//		
-		// checking and savings accounts balances are initialized to 0
-		// user has to deposit money after creating account
-		if(acctType.contentEquals("c")) {
-			this.accountType = AccountType.CHECKING;
-		}
-		else if(acctType.contentEquals("s")) {
-			this.accountType = AccountType.SAVINGS;
-		}
+
 		//this.checkingAccountBalance = 0;
 		//this.savingsAccountBalance = 0;
 	}
@@ -155,27 +129,49 @@ public class Account {
 
 
 	public int getCheckingAccountBalance() {
+		if(getAccountType() == AccountType.CHECKING) {
+			return (int)accountTypeBalance.getAccount_balance();
+		}
 		return checkingAccountBalance;
 	}
 
 	public void setCheckingAccountBalance(int checkingAccountBalance) {
 		this.checkingAccountBalance = checkingAccountBalance;
+		if(getAccountType() == AccountType.CHECKING) {
+			this.accountTypeBalance.setAccount_balance(checkingAccountBalance);
+		}
 	}
 
 	public int getSavingsAccountBalance() {
+		if(getAccountType() == AccountType.SAVINGS) {
+			return (int)accountTypeBalance.getAccount_balance();
+		}
 		return savingsAccountBalance;
 	}
 
 	public void setSavingsAccountBalance(int savingsAccountBalance) {
 		this.savingsAccountBalance = savingsAccountBalance;
+		if(getAccountType() == AccountType.SAVINGS) {
+			this.accountTypeBalance.setAccount_balance(savingsAccountBalance);
+		}
 	}
+
+	public AccountTypeBalance getAccountTypeBalance() {
+		return accountTypeBalance;
+	}
+
+	public void setAccountTypeBalance(AccountTypeBalance accountTypeBalance) {
+		this.accountTypeBalance = accountTypeBalance;
+		
+	}
+
 
 	public AccountType getAccountType() {
-		return accountType;
-	}
-
-	public void setAccountType(AccountType accountType) {
-		this.accountType = accountType;
+		if(accountTypeBalance != null) {
+			return accountTypeBalance.accountType;
+		}
+		// to be modified if neccessary
+		return AccountType.SAVINGS;
 	}
 
 	
